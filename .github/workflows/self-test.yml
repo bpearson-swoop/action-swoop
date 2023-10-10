@@ -1,0 +1,37 @@
+name: "Self test"
+
+on:
+  pull_request:
+    # All PRs
+  push:
+    branches:
+      - master
+
+
+jobs:
+  default-test:
+    runs-on: ubuntu-latest
+    name: "Default test case"
+    strategy:
+      matrix:
+        php-version:
+          - '7.0'
+          - '7.1'
+          - '7.2'
+          - '7.3'
+          - '7.4'
+          - '8.0'
+          - '8.1'
+          - '8.2'
+
+    steps:
+      - name: "Check out code"
+        uses: actions/checkout@main
+
+      - name: "PHP Syntax check"
+        id: self-test
+        continue-on-error: false
+        uses: ./lint
+        with:
+          php-version: ${{ matrix.php-version }}
+          message-level: 8

@@ -1,0 +1,37 @@
+name: "PHP Lint Checker"
+description: "Run PHP's built in syntax check on files"
+branding:
+  icon: alert-triangle
+  color: blue
+
+inputs:
+  php-version:
+    description: "PHP Version"
+    required: true
+    default: 'latest'
+
+  php-file-extensions:
+    description: "Comma separated list of PHP file extensions to lint"
+    required: false
+    default: php
+
+  message-level:
+    description: "Message level for output 1, 2, 4, 8"
+    required: false
+    default: 4
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Setup"
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ inputs.php-version }}
+        ini-values: "short_open_tag=1"
+
+    - name: "Run check script"
+      shell: bash
+      env:
+        INPUT_PHP_FILE_EXTENSIONS: ${{ inputs.php-file-extensions }}
+        MSGLEVEL: ${{ inputs.message-level }}
+      run: php ${{ github.action_path }}/syntax-check.php
