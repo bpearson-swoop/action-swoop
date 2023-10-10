@@ -41,7 +41,7 @@ $files = getFiles();
 $limit = [];
 if ($event !== 'push' && $baseRef !== $headRef) {
     $limit = getChangedFiles($baseRef, $headRef);
-    logmsg(sprintf("Files between %s and %s changed: ", $baseRef, $headRef, var_export($limit, true)), DEBUG);
+    logmsg(sprintf("Files between %s and %s changed: ", $baseRef, $headRef, implode(',', $limit)), DEBUG);
 }//end if
 
 foreach ($files as $file => $info) {
