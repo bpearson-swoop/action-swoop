@@ -13,6 +13,8 @@ function getChangedFiles($source, $merge)
 {
     // By default, the action will do a shallow merge.
     fetch($source);
+    fetch($merge);
+    checkout($merge);
     update($merge);
 
     $files = diff($source, $merge);
@@ -20,6 +22,22 @@ function getChangedFiles($source, $merge)
     return $files;
 
 }//end getChangedFiles()
+
+
+/**
+ * Check out a branch.
+ *
+ * @param string $branch The branch to checkout.
+ *
+ * @return void
+ */
+function checkout($branch)
+{
+    $output  = [];
+    $command = sprintf('git checkout %s 2>/dev/null', $branch);
+    exec($command, $output, $return);
+
+}//end checkout()
 
 
 /**
@@ -66,6 +84,8 @@ function diff($source, $merge)
 {
     $output  = [];
     $command = sprintf('git diff --name-only origin/%s origin/%s', $source, $merge);
+    var_dump($command);
+    var_dump($output);
     exec($command, $output, $return);
 
     return $output;
