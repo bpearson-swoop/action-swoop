@@ -17,10 +17,27 @@ function getChangedFiles($source, $merge)
     checkout($merge);
     update($merge);
     $output  = [];
-    $command = 'git status; git log -n 1 --oneline';
+    $command = 'git remote -v';
     exec($command, $output, $return);
     var_dump($command);
     var_dump($output);
+    $output  = [];
+    $command = 'git diff --name-only origin/master origin/test';
+    exec($command, $output, $return);
+    var_dump($command);
+    var_dump($output);
+    $output  = [];
+    $command = 'git diff --name-only origin/master..origin/test';
+    exec($command, $output, $return);
+    var_dump($command);
+    $output  = [];
+    $command = 'git diff --name-only origin/master...origin/test';
+    exec($command, $output, $return);
+    var_dump($command);
+    $output  = [];
+    $command = 'git diff --name-only origin/master';
+    exec($command, $output, $return);
+    var_dump($command);
 
     $files = diff($source, $merge);
 
