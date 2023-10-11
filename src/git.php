@@ -18,8 +18,12 @@ function getChangedFiles($source, $merge)
     update($merge);
 
     $files = diff($source, $merge);
+    $fi    = [];
+    foreach ($files as $file) {
+        $fi[$file] = new SplFileInfo($file);
+    }//end foreach
 
-    return $files;
+    return $fi;
 
 }//end getChangedFiles()
 

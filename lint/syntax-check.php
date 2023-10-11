@@ -37,20 +37,15 @@ $counts = [
 ];
 $exit   = 0;
 
-$files = getFiles();
-$limit = [];
 if ($event !== 'push' && $baseRef !== $headRef) {
-    $limit = getChangedFiles($baseRef, $headRef);
+    $files = getChangedFiles($baseRef, $headRef);
     logmsg(sprintf("Files between %s and %s changed: %s", $baseRef, $headRef, implode(',', $limit)), DEBUG);
+} else {
+    $files = getFiles();
+    logmsg("All files will be checked", DEBUG);
 }//end if
 
 foreach ($files as $file => $info) {
-    $path = substr($file, 2);
-    if (!in_array($path, $limit)) {
-        // Skip files that are not in the limit.
-        continue;
-    }//end if
-
     if (in_array($info->getExtension(), $phpextensions)) {
         logmsg("Checking file: $file", DEBUG);
         $command = sprintf('php -l %s 2>&1', escapeshellarg($file));
