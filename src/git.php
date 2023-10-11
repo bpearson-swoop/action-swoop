@@ -30,14 +30,17 @@ function getChangedFiles($source, $merge)
     $command = 'git diff --name-only origin/master..origin/test';
     exec($command, $output, $return);
     var_dump($command);
+    var_dump($output);
     $output  = [];
     $command = 'git diff --name-only origin/master...origin/test';
     exec($command, $output, $return);
     var_dump($command);
+    var_dump($output);
     $output  = [];
     $command = 'git diff --name-only origin/master';
     exec($command, $output, $return);
     var_dump($command);
+    var_dump($output);
 
     $files = diff($source, $merge);
 
