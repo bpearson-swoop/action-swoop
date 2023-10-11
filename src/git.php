@@ -16,31 +16,6 @@ function getChangedFiles($source, $merge)
     fetch($merge);
     checkout($merge);
     update($merge);
-    $output  = [];
-    $command = 'git remote -v';
-    exec($command, $output, $return);
-    var_dump($command);
-    var_dump($output);
-    $output  = [];
-    $command = 'git diff --name-only origin/master origin/test';
-    exec($command, $output, $return);
-    var_dump($command);
-    var_dump($output);
-    $output  = [];
-    $command = 'git diff --name-only origin/master..origin/test';
-    exec($command, $output, $return);
-    var_dump($command);
-    var_dump($output);
-    $output  = [];
-    $command = 'git diff --name-only origin/master...origin/test';
-    exec($command, $output, $return);
-    var_dump($command);
-    var_dump($output);
-    $output  = [];
-    $command = 'git diff --name-only origin/master';
-    exec($command, $output, $return);
-    var_dump($command);
-    var_dump($output);
 
     $files = diff($source, $merge);
 
@@ -108,10 +83,8 @@ function update($branch)
 function diff($source, $merge)
 {
     $output  = [];
-    $command = sprintf('git diff --name-only origin/%s origin/%s', $source, $merge);
+    $command = sprintf('git diff --name-only origin/%s...origin/%s', $source, $merge);
     exec($command, $output, $return);
-    var_dump($command);
-    var_dump($output);
 
     return $output;
 
