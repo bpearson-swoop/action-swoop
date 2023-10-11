@@ -39,7 +39,7 @@ $exit   = 0;
 
 if ($event !== 'push' && $baseRef !== $headRef) {
     $files = getChangedFiles($baseRef, $headRef);
-    logmsg(sprintf("Files between %s and %s changed: %s", $baseRef, $headRef, implode(',', $limit)), DEBUG);
+    logmsg(sprintf("Files between %s and %s changed: %s", $baseRef, $headRef, implode(',', $files)), DEBUG);
 } else {
     $files = getFiles();
     logmsg("All files will be checked", DEBUG);
