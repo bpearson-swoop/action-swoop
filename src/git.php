@@ -16,6 +16,11 @@ function getChangedFiles($source, $merge)
     fetch($merge);
     checkout($merge);
     update($merge);
+    $output  = [];
+    $command = 'git status; git log -n 1 --oneline';
+    exec($command, $output, $return);
+    var_dump($command);
+    var_dump($output);
 
     $files = diff($source, $merge);
 
@@ -84,9 +89,9 @@ function diff($source, $merge)
 {
     $output  = [];
     $command = sprintf('git diff --name-only origin/%s origin/%s', $source, $merge);
+    exec($command, $output, $return);
     var_dump($command);
     var_dump($output);
-    exec($command, $output, $return);
 
     return $output;
 
