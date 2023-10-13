@@ -17,23 +17,19 @@ $msgLevel = environment('MSGLEVEL', $msgLevel);
 
 logmsg("PHPUnit Groups: " . $groups, DEBUG);
 
-$command = "ls -la ";
-$output  = [];
-$retVal  = exec($command, $output, $exitCode);
-logmsg(var_export($output, true), DEBUG);
-
 $exit = 0;
 
 $command = sprintf('phpunit --no-coverage --group %s %s 2>&1', escapeshellarg($groups), escapeshellarg($path));
 $output  = [];
 $retVal  = exec($command, $output, $exitCode);
+    logmsg(var_export($command, true), DEBUG);
 if ($exitCode === 0) {
     // Lint passed.
     logmsg("PHPUnit success", INFO);
-    logmsg(var_export($output, true), DEBUG);
+    logmsg(implode("\n", $output), DEBUG);
 } else {
     logmsg("PHPUnit failed", ERROR);
-    logmsg(var_export($output, true), ERROR);
+    logmsg(implode("\n", $output), ERROR);
 }//end if
 
 exit($exitCode);
