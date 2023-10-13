@@ -1,0 +1,43 @@
+name: "PHPUnit"
+description: "Run PHPUnit tests"
+branding:
+  icon: alert-triangle
+  color: blue
+
+inputs:
+  php-version:
+    description: "PHP Version"
+    required: true
+    default: 'latest'
+
+  group:
+    description: "Comma separated list of groups to run"
+    required: false
+    default: nodatabase
+
+  phpunit-version:
+    description: "PHPUnit Version"
+    required: false
+    default: 'latest'
+
+  message-level:
+    description: "Message level for output 1, 2, 4, 8"
+    required: false
+    default: 4
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Setup"
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ inputs.php-version }}
+        ini-values: "short_open_tag=1"
+        tools: phpunit:${{ inputs.phpunit-version }}
+
+    - name: "Run unit testing"
+      shell: bash
+      env:
+        GROUP: ${{ inputs.group }}
+        MSGLEVEL: ${{ inputs.message-level }}
+      run: php ${{ github.action_path }}/phpunit.php
