@@ -24,7 +24,7 @@ logmsg(var_export($output, true), DEBUG);
 
 $exit = 0;
 
-$command = sprintf('./vendor/bin/phpunit --no-coverage --group %s %s 2>&1', escapeshellarg($groups), escapeshellarg($path));
+$command = sprintf('phpunit --no-coverage --group %s %s 2>&1', escapeshellarg($groups), escapeshellarg($path));
 $output  = [];
 $retVal  = exec($command, $output, $exitCode);
 if ($exitCode === 0) {
