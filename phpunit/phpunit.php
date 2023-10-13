@@ -22,11 +22,10 @@ $exit = 0;
 $command = sprintf('phpunit --no-coverage --group %s %s 2>&1', escapeshellarg($groups), $path);
 $output  = [];
 $retVal  = exec($command, $output, $exitCode);
-    logmsg(var_export($command, true), DEBUG);
 if ($exitCode === 0) {
     // Lint passed.
     logmsg("PHPUnit success", INFO);
-    logmsg(implode("\n", $output), DEBUG);
+    logmsg(implode("\n", $output), INFO);
 } else {
     logmsg("PHPUnit failed", ERROR);
     logmsg(implode("\n", $output), ERROR);
