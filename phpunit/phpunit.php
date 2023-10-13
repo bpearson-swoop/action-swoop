@@ -15,6 +15,8 @@ $path     = './tests/';
 $groups   = environment('GROUP', $groups);
 $msgLevel = environment('MSGLEVEL', $msgLevel);
 
+logmsg(ini_get('include_path'), INFO);
+
 logmsg("PHPUnit Groups: " . $groups, DEBUG);
 
 $exit = 0;

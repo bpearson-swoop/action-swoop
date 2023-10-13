@@ -37,7 +37,7 @@ runs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: ${{ inputs.php-version }}
-        ini-values: "short_open_tag=1, include_path ${{ inputs.include-path }}"
+        ini-values: "short_open_tag=1, include_path=${{ inputs.include-path }}"
         tools: phpunit:${{ inputs.phpunit-version }}
 
     - name: "Run unit testing"
