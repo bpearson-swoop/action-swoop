@@ -25,8 +25,10 @@ $retVal  = exec($command, $output, $exitCode);
 if ($exitCode === 0) {
     // Lint passed.
     logmsg("PHPUnit success", INFO);
+    logmsg(var_export($output, true), DEBUG);
 } else {
     logmsg("PHPUnit failed", ERROR);
+    logmsg(var_export($output, true), ERROR);
 }//end if
 
 exit($exitCode);
