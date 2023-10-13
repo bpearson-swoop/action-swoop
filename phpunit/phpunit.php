@@ -9,7 +9,7 @@ require_once dirname(__DIR__).'/src/output.php';
 // Defaults.
 $groups   = ['nodatabase'];
 $msgLevel = INFO;
-$path     = 'tests/';
+$path     = './tests/';
 
 // Environment variables.
 $groups   = environment('GROUP', $groups);
@@ -19,7 +19,7 @@ logmsg("PHPUnit Groups: " . $groups, DEBUG);
 
 $exit = 0;
 
-$command = sprintf('phpunit --no-coverage --group %s %s 2>&1', escapeshellarg($groups), escapeshellarg($path));
+$command = sprintf('phpunit --no-coverage --group %s %s 2>&1', escapeshellarg($groups), $path);
 $output  = [];
 $retVal  = exec($command, $output, $exitCode);
     logmsg(var_export($command, true), DEBUG);
