@@ -9,20 +9,21 @@ require_once dirname(__DIR__).'/src/output.php';
 // Defaults.
 $groups   = ['nodatabase'];
 $msgLevel = INFO;
+$include  = '.';
 $path     = './tests/';
 
 // Environment variables.
 $groups   = environment('GROUP', $groups);
+$include  = environment('INCLUDEPATH', $include);
 $msgLevel = environment('MSGLEVEL', $msgLevel);
-
-logmsg(ini_get('include_path'), INFO);
 
 logmsg("PHPUnit Groups: " . $groups, DEBUG);
 
 $exit = 0;
 
-$command = sprintf('phpunit --no-coverage --group %s %s 2>&1', escapeshellarg($groups), $path);
 $output  = [];
+$command = sprintf('phpunit --no-coverage --include-path %s --group %s %s 2>&1', escapeshellarg($include), escapeshellarg($groups), $path);
+logmsg("Running command: {$command}", DEBUG);
 $retVal  = exec($command, $output, $exitCode);
 if ($exitCode === 0) {
     // Lint passed.
