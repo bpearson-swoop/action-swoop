@@ -20,6 +20,11 @@ inputs:
     required: false
     default: 'latest'
 
+  include-path:
+    description: "PHP include path"
+    required: false
+    default: '.'
+
   message-level:
     description: "Message level for output 1, 2, 4, 8"
     required: false
@@ -32,7 +37,7 @@ runs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: ${{ inputs.php-version }}
-        ini-values: "short_open_tag=1"
+        ini-values: "short_open_tag=1, include_path ${{ inputs.include-path }}"
         tools: phpunit:${{ inputs.phpunit-version }}
 
     - name: "Run unit testing"
