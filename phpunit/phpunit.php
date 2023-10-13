@@ -17,6 +17,11 @@ $msgLevel = environment('MSGLEVEL', $msgLevel);
 
 logmsg("PHPUnit Groups: " . $groups, DEBUG);
 
+$command = "ls -la ";
+$output  = [];
+$retVal  = exec($command, $output, $exitCode);
+logmsg(var_export($output, true), DEBUG);
+
 $exit = 0;
 
 $command = sprintf('./vendor/bin/phpunit --no-coverage --group %s %s 2>&1', escapeshellarg($groups), escapeshellarg($path));
