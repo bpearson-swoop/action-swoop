@@ -87,7 +87,7 @@ function update($branch)
 function diff($source, $merge)
 {
     $output  = [];
-    $command = sprintf("git diff --name-status origin/%s...origin/%s | grep -v -E '^D' | awk '{ print \$2 }'", $source, $merge);
+    $command = sprintf("git diff --name-status origin/%s...origin/%s | grep -v -E '^D' | awk '{ print (\$1 ~ /^R/ ? \$3 : \$2) }'", $source, $merge);
     exec($command, $output, $return);
 
     return $output;
