@@ -21,7 +21,7 @@ logmsg("Using Coding Standard: " . $standard, DEBUG);
 $extArray = explode(',', $extensions);
 $extRegex = implode('|', $extArray);
 if ($standard === 'SWOOP') {
-    $standard = './{$standard}/ruleset.xml';
+    $standard = "./{$standard}/ruleset.xml";
 }//end if
 
 $exitCode = 0;
