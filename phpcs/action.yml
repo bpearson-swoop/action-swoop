@@ -1,0 +1,51 @@
+name: "PHPCS"
+description: "Run PHPCS using the SWOOP coding standard"
+branding:
+  icon: alert-triangle
+  color: blue
+
+inputs:
+  php-version:
+    description: "PHP Version"
+    required: true
+    default: 'latest'
+
+  standard:
+    description: "Coding Standard to use, default is SWOOP"
+    required: false
+    default: "SWOOP"
+
+  extensions:
+    description: "Extensions to check"
+    required: false
+    default: "php"
+
+  message-level:
+    description: "Message level for output 1, 2, 4, 8"
+    required: false
+    default: 4
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Setup"
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ inputs.php-version }}
+        ini-values: "short_open_tag=1"
+        tools: cs2pr, phpcs
+
+    - name: "Checkout the standard"
+      uses: actions/checkout@v2
+      with:
+        repository: "bpearson-swoop/SWOOPCS"
+        path: "SWOOP"
+        fetch-depth: 0
+
+    - name: "Run PHPCS"
+      shell: bash
+      env:
+        EXTENSIONS: ${{ inputs.extensions }}
+        STANDARD: ${{ inputs.standard }}
+        MSGLEVEL: ${{ inputs.message-level }}
+      run: php ${{ github.action_path }}/phpcs.php ${{ github.event.number }}
