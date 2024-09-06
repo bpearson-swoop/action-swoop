@@ -33,6 +33,19 @@ if ($pr === null) {
     exit(1);
 }
 
+// Debugging help.
+$output = [];
+$command = sprintf('gh pr diff %s --name-only | grep -v -E "/(vendor|SWOOP|public_html/dist|node_modules)/" | grep -E %s', escapeshellarg($pr), escapeshellarg("\.({$extRegex})"));
+logmsg("Running command: {$command}", DEBUG);
+$retVal  = exec($command, $output, $exitCode);
+logmsg(implode("\n", $output), DEBUG);
+
+$output = [];
+$command = sprintf('gh pr diff %s --name-only | grep -v -E "/(vendor|SWOOP|public_html/dist|node_modules)/" | grep -E %s | xargs phpcs --report=checkstyle --standard=%s', escapeshellarg($pr), escapeshellarg("\.({$extRegex})"), escapeshellarg($standard));
+logmsg("Running command: {$command}", DEBUG);
+$retVal  = exec($command, $output, $exitCode);
+logmsg(implode("\n", $output), DEBUG);
+
 $output  = [];
 $command = sprintf('gh pr diff %s --name-only | grep -v -E "/(vendor|SWOOP|public_html/dist|node_modules)/" | grep -E %s | xargs phpcs --report=checkstyle --standard=%s | cs2pr', escapeshellarg($pr), escapeshellarg("\.({$extRegex})"), escapeshellarg($standard));
 logmsg("Running command: {$command}", DEBUG);
@@ -40,7 +53,7 @@ $retVal  = exec($command, $output, $exitCode);
 if ($exitCode === 0) {
     // PHPCS passed.
     logmsg("PHPCS success", INFO);
-    logmsg(implode("\n", $output), INFO);
+    logmsg(implode("\n", $output), DEBUG);
 } else {
     logmsg("PHPCS failed", ERROR);
     logmsg(implode("\n", $output), ERROR);
