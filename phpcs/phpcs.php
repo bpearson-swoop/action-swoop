@@ -46,4 +46,7 @@ if ($exitCode === 0) {
     logmsg(implode("\n", $output), ERROR);
 }//end if
 
-exit($exitCode);
+// Currently, we don't want to fail the build if PHPCS fails, just annotate the PR.
+// Once we are happy with the results, we can uncomment the following line.
+//exit($exitCode);
+exit(0);
