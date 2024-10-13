@@ -16,7 +16,8 @@ $standard   = environment('STANDARD', $standard);
 $extensions = environment('EXTENSIONS', $extensions);
 $msgLevel   = environment('MSGLEVEL', $msgLevel);
 
-logmsg("Using Coding Standard: " . $standard, DEBUG);
+logmsg("Using Coding Standard: " . $standard, INFO);
+logmsg("Note: In GH, there is a limit 10 errors and 10 warnings per job", INFO);
 
 $extArray = explode(',', $extensions);
 $extRegex = implode('|', $extArray);
@@ -33,14 +34,29 @@ if ($pr === null) {
     exit(1);
 }
 
+if ($msgLevel == 8) {
+    // Extra ddebugging help.
+    $output = [];
+    $command = sprintf('gh pr diff %s --name-only | grep -v -E "/(vendor|SWOOP|public_html/dist|node_modules)/" | grep -E %s', escapeshellarg($pr), escapeshellarg("\.({$extRegex})"));
+    logmsg("Files changed", DEBUG);
+    $retVal  = exec($command, $output, $exitCode);
+    logmsg(implode("\n", $output), DEBUG);
+
+    $output = [];
+    $command = sprintf('gh pr diff %s --name-only | grep -v -E "/(vendor|SWOOP|public_html/dist|node_modules)/" | grep -E %s | xargs phpcs --report=checkstyle --standard=%s', escapeshellarg($pr), escapeshellarg("\.({$extRegex})"), escapeshellarg($standard));
+    logmsg("PHPCS Command: {$command}", DEBUG);
+    $retVal  = exec($command, $output, $exitCode);
+    logmsg(implode("\n", $output), DEBUG);
+}//end if
+
 $output  = [];
 $command = sprintf('gh pr diff %s --name-only | grep -v -E "/(vendor|SWOOP|public_html/dist|node_modules)/" | grep -E %s | xargs phpcs --report=checkstyle --standard=%s | cs2pr', escapeshellarg($pr), escapeshellarg("\.({$extRegex})"), escapeshellarg($standard));
-logmsg("Running command: {$command}", DEBUG);
+logmsg("Command: {$command}", DEBUG);
 $retVal  = exec($command, $output, $exitCode);
 if ($exitCode === 0) {
     // PHPCS passed.
     logmsg("PHPCS success", INFO);
-    logmsg(implode("\n", $output), INFO);
+    logmsg(implode("\n", $output), DEBUG);
 } else {
     logmsg("PHPCS failed", ERROR);
     logmsg(implode("\n", $output), ERROR);
