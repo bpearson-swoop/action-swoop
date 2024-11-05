@@ -272,9 +272,9 @@ class Secret
      *
      * @param string $path The path to filter by.
      *
-     * @return string|boolean
+     * @return mixed
      */
-    private function _filterByPath(string $path): string|bool
+    private function _filterByPath(string $path): mixed
     {
         foreach ($this->ignoreDirs as $dir) {
             if (strpos($path, "/{$dir}/") !== false) {
