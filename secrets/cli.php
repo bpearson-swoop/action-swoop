@@ -29,6 +29,6 @@ $secret->ignoreFiles[] = '.bundle.';
 
 $files = $secret->getFiles($path);
 $lines = $secret->run($files, $path);
-[$code, $csxml, $xml] = $secret->output($lines);
+list($code, $csxml, $xml) = $secret->output($lines);
 echo "{$xml}\n";
 exit($code);

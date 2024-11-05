@@ -49,7 +49,7 @@ if ($msgLevel == 8) {
     logmsg(implode("\n", $lines), DEBUG);
 }//end if
 
-[$code, $csxml, $xml] = $secret->output($lines);
+list($code, $csxml, $xml) = $secret->output($lines);
 $output  = [];
 $command = sprintf('cs2pr %s', escapeshellarg($csxml));
 logmsg("Command: {$command}", DEBUG);
