@@ -136,38 +136,25 @@ class Secret
     {
         $results = [];
         foreach ($files as $file) {
-            $fh  = fopen($file, "r");
-            $pos = 0;
-            while (($line = fgets($fh)) !== false) {
-                $pos++;
-                $clean   = $this->_clean($line);
-                $entropy = round($this->_shannon($clean), 2);
-                if ($entropy > 5.1) {
-                    if (strpos($line, 'integrity="sha') !== false) {
-                        // Ignore SSI hashes.
-                        continue;
-                    }//end if
-
-                    $message = "Secret detected (Score: {$entropy}).";
-                    $type    = "error";
-                    if (strlen($line) > 120) {
-                        $message .= " Possibly a false positive, the line might need refactoring.";
-                        $type     = "warning";
-                    }//end if
-
+            $contents = file_get_contents($file);
+            $chars    = "-_0123456789";
+            foreach (str_word_count($contents, 2, $chars) as $pos => $word) {
+                $word = trim($word, " \t\n\r\"'`");
+                if (strlen($word) < 8) {
+                    continue;
+                }//end if
+                $entropy = round($this->_shannon($word), 2);
+                if ($entropy > 4.5) {
                     $results[] = [
-                        "type"    => $type,
+                        "type"    => "error",
                         "file"    => ($path !== null) ? str_replace(realpath($path).'/', '', $file) : $file,
-                        "line"    => $line,
-                        "lineno"  => $pos,
-                        "data"    => $clean,
+                        "lineno"  => substr_count($contents, "\n", 0, $pos),
+                        "data"    => $word,
                         "entropy" => $entropy,
-                        "message" => $message,
+                        "message" => "Secret detected (Score: {$entropy}).",
                     ];
                 }//end if
-            }//end while
-
-            fclose($fh);
+            }//end foreach
         }//end foreach
 
         return $results;
@@ -187,10 +174,10 @@ class Secret
         $xml  = "<"."?xml version=\"1.0\" encoding=\"UTF-8\"?".">\n";
         $xml .= "<checkstyle version=\"8.0\">\n";
         $code = 0;
+        $errors   = 0;
+        $warnings = 0;
         if (empty($lines) === false) {
             $currFile = null;
-            $errors   = 0;
-            $warnings = 0;
             foreach ($lines as $line) {
                 if ($currFile === null || $currFile !== $line['file']) {
                     if ($currFile !== null) {
@@ -201,7 +188,7 @@ class Secret
                     $xml     .= "    <file name=\"{$currFile}\">\n";
                 }//end if
 
-                $xml .= "        <{$line['type']} line=\"{$line['lineno']}\" severity=\"{$line['type']}\" message=\"{$line['message']}\" />\n";
+                $xml .= "        <{$line['type']} line=\"{$line['lineno']}\" severity=\"{$line['type']}\" message=\"{$line['message']}\" data=\"{$line['data']}\"/>\n";
                 if ($line['type'] === 'error') {
                     $errors++;
                     $code = 1;
@@ -222,49 +209,6 @@ class Secret
         return [$code, $csxml, $xml];
 
     }//end output()
-
-
-    /**
-     * Clean a line.
-     *
-     * @param string $line The line to clean.
-     *
-     * @return string
-     */
-    private function _clean(string $line): string
-    {
-        // Remove HTML tags.
-        $line = strip_tags($line);
-
-        // Remove obvious false positives.
-        $line = preg_replace("#(\\\$_(GET|POST|REQUEST|COOKIE|SERVER|ENV|FILES|SESSION|GLOBALS)\[([^\]]*)\])#", "", $line);
-        $line = preg_replace("#((varchar|character varying|decimal|float|numeric)\([0-9]+\))#i", "", $line);
-        $line = str_ireplace(["CREATE", "TEMPORARY", "TABLE", "NOT", "NULL", "FROM", "WHERE", "GROUP BY", "ORDER BY", "DEFAULT", "UPDATE", "SELECT", " AS ", "ILIKE", "LIKE"], "", $line);
-        $line = str_ireplace(["mozilla/", "gecko/", "firefox/", "chrome/", "applewebkit/", "safari/"], "", $line);
-        $line = str_ireplace(["samsung", "browser", "html", "mobile", "build", "safari/"], "", $line);
-        $line = str_ireplace(["windows", "osx", "linux", "android", "ios"], "", $line);
-        $line = str_ireplace(["http://", "https://", "ftp://", "file://", "data://", "mailto:"], "", $line);
-        $line = str_ireplace(["&nbsp;", "&lt;", "&gt;", "&amp;", "&quot;", "&apos;"], "", $line);
-
-        // Removing some obvious tokens (PHP, JS, etc).
-        $line = str_ireplace(["<"."?php", "<"."?=", "<"."?", "?".">"], "", $line);
-        $line = str_ireplace(["//", "/*", "*/", "#", "/*", "*/"], "", $line);
-        $line = str_ireplace([" return ", " = ", " == ", " === ", " != ", " !== ", " && ", " || ", " + ", " - ", " * ", " / ", " % ", " < ", " > ", " <= ", " > ", '->'], " ", $line);
-        $line = str_ireplace([" ", "?", "\"", "'", ">", "<", ".", ",", ":", ";", "`", "(", ")", "[", "]", "{", "}", "%"], "", $line);
-        $line = str_ireplace(['$this', "self::", "parent::", "static::"], "", $line);
-        $line = str_ireplace(["curl_setopt", "curl_init", "curl_"], "", $line);
-
-        // Remove sequences/false positives.
-        $line = str_ireplace('abcdefghijklmnopqrstuvwxyz', '', $line);
-        $line = str_ireplace('23456789', '', $line);
-        $line = str_ireplace('abcdefghjklmmnpqrstuvwxyz', '', $line);
-        $line = str_ireplace('0123456789', '', $line);
-        $line = str_ireplace('1234567890', '', $line);
-        $line = str_ireplace([" 0 ", " 1 ", " 2 ", " 3 ", " 4 ", " 5 ", " 6 ", " 7 ", " 8 ", " 9 "], " ", $line);
-
-        return $line;
-
-    }//end _clean()
 
 
     /**
