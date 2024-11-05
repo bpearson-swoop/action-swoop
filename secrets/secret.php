@@ -184,7 +184,7 @@ class Secret
      */
     public function output(array $lines): array
     {
-        $xml  = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+        $xml  = "<"."?xml version=\"1.0\" encoding=\"UTF-8\"?".">\n";
         $xml .= "<checkstyle version=\"8.0\">\n";
         $code = 0;
         if (empty($lines) === false) {
@@ -247,7 +247,7 @@ class Secret
         $line = str_ireplace(["&nbsp;", "&lt;", "&gt;", "&amp;", "&quot;", "&apos;"], "", $line);
 
         // Removing some obvious tokens (PHP, JS, etc).
-        $line = str_ireplace(["<?php", "<?=", "<?", "?>"], "", $line);
+        $line = str_ireplace(["<"."?php", "<"."?=", "<"."?", "?".">"], "", $line);
         $line = str_ireplace(["//", "/*", "*/", "#", "/*", "*/"], "", $line);
         $line = str_ireplace([" return ", " = ", " == ", " === ", " != ", " !== ", " && ", " || ", " + ", " - ", " * ", " / ", " % ", " < ", " > ", " <= ", " > ", '->'], " ", $line);
         $line = str_ireplace([" ", "?", "\"", "'", ">", "<", ".", ",", ":", ";", "`", "(", ")", "[", "]", "{", "}", "%"], "", $line);
