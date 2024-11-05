@@ -34,5 +34,4 @@ jobs:
         uses: ./lint
         with:
           php-version: ${{ matrix.php-version }}
-          ini-values: "short_open_tag=1"
           message-level: 8
