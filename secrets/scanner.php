@@ -65,4 +65,4 @@ if (empty($lines) === true) {
     logmsg("Secrets failed", ERROR);
 }//end if
 
-exit($core);
+exit($code);
