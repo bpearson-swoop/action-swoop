@@ -137,14 +137,28 @@ class Secret
         $results = [];
         foreach ($files as $file) {
             $contents = file_get_contents($file);
-            $chars    = "-_0123456789";
+            $chars    = "-_0123456789\/+*^%$#@!~&=:?.";
             foreach (str_word_count($contents, 2, $chars) as $pos => $word) {
-                $word = trim($word, " \t\n\r\"'`");
+                $word = $this->_clean($word);
                 if (strlen($word) < 8) {
                     continue;
                 }//end if
+
+                if (preg_match('/^((sha|md)[0-9]{1,3}\-)/', $word) === 1) {
+                    // Skip words starting with sha hash prefixes.
+                    continue;
+                }//end if
+
+                if (strpos($word, 'data:') === 0
+                    || (strpos($word, 'http') === 0 && @parse_url($word) !== false)
+                    || (strpos($word, '/') === 0 && file_exists($path.$word) === true)
+                ) {
+                    // Skip URLs/paths etc.
+                    continue;
+                }//end if
+
                 $entropy = round($this->_shannon($word), 2);
-                if ($entropy > 4.5) {
+                if ($entropy > 4.76) {
                     $results[] = [
                         "type"    => "error",
                         "file"    => ($path !== null) ? str_replace(realpath($path).'/', '', $file) : $file,
@@ -209,6 +223,35 @@ class Secret
         return [$code, $csxml, $xml];
 
     }//end output()
+
+
+    /**
+     * Clean up the word.
+     *
+     * @param string $word The word to clean.
+     *
+     * @return string
+     */
+    private function _clean(string $word): string
+    {
+        // Remove hrefs.
+        if (strpos($word, 'href=') === 0) {
+            $word = str_ireplace('href=', '', $word);
+        }//end if
+
+        // Remove leading/trailing characters.
+        $word = trim($word, " \t\n\r\"'`");
+
+        // Remove known patterns.
+        $word = str_ireplace('abcdefghijklmnopqrstuvwxyz', '', $word);
+        $word = str_ireplace('abcdefghjklmnpqrstuvwxyz', '', $word);
+        $word = str_ireplace('0123456789', '', $word);
+        $word = str_ireplace('1234567890', '', $word);
+        $word = str_ireplace('23456789', '', $word);
+
+        return $word;
+
+    }//end _clean()
 
 
     /**
