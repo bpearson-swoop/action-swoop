@@ -59,7 +59,7 @@ $command = sprintf('cs2pr %s', escapeshellarg($csxml));
 logmsg("Command: {$command}", DEBUG);
 $retVal  = exec($command, $output);
 $output = implode("\n", $output);
-logmsg("Output: {$output}", DEBUG);
+logmsg("Output: {$output}", ERROR);
 if (empty($lines) === true) {
     // Secrets passed.
     logmsg("Secrets success", INFO);
