@@ -137,7 +137,7 @@ class Secret
         $results = [];
         foreach ($files as $file) {
             $contents = file_get_contents($file);
-            $chars    = "-_0123456789\/+*^%$#@!~&=:?.";
+            $chars    = "-_0123456789\/+*^%$#@!~&:?.";
             foreach (str_word_count($contents, 2, $chars) as $pos => $word) {
                 $word = $this->_clean($word);
                 if (strlen($word) < 8) {
@@ -151,14 +151,14 @@ class Secret
 
                 if (strpos($word, 'data:') === 0
                     || (strpos($word, 'http') === 0 && @parse_url($word) !== false)
-                    || (strpos($word, '/') === 0 && file_exists($path.$word) === true)
+                    || (strpos($word, '/') !== false && file_exists($path.'/'.$word) === true)
                 ) {
                     // Skip URLs/paths etc.
                     continue;
                 }//end if
 
                 $entropy = round($this->_shannon($word), 2);
-                if ($entropy > 4.76) {
+                if ($entropy > 4.53) {
                     $results[] = [
                         "type"    => "error",
                         "file"    => ($path !== null) ? str_replace(realpath($path).'/', '', $file) : $file,
