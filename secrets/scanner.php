@@ -56,15 +56,14 @@ if ($msgLevel == 8) {
 list($code, $csxml, $xml) = $secret->output($lines);
 $output  = [];
 $command = sprintf('cs2pr %s', escapeshellarg($csxml));
-logmsg("Command: {$command}", DEBUG);
 $retVal  = exec($command, $output);
-$output = implode("\n", $output);
-logmsg("Output: {$output}", ERROR);
+logmsg("Command: {$command}", DEBUG);
 if (empty($lines) === true) {
     // Secrets passed.
     logmsg("Secrets success", INFO);
 } else {
     logmsg("Secrets failed", ERROR);
+    logmsg(implode("\n", $output), ERROR);
 }//end if
 
 exit($code);
