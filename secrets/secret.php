@@ -162,7 +162,7 @@ class Secret
                     $results[] = [
                         "type"    => "error",
                         "file"    => ($path !== null) ? str_replace(realpath($path).'/', '', $file) : $file,
-                        "lineno"  => substr_count($contents, "\n", 0, $pos),
+                        "lineno"  => (substr_count($contents, "\n", 0, $pos) + 1),
                         "data"    => $word,
                         "entropy" => $entropy,
                         "message" => "Secret detected (Score: {$entropy}).",
