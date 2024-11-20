@@ -22,7 +22,7 @@ logmsg("PHPUnit Groups: " . $groups, DEBUG);
 $exit = 0;
 
 $output  = [];
-$command = sprintf('phpunit --no-coverage --include-path %s --group %s %s 2>&1', escapeshellarg($include), escapeshellarg($groups), $path);
+$command = sprintf('./vendor/bin/phpunit --no-coverage --include-path %s --group %s %s 2>&1', escapeshellarg($include), escapeshellarg($groups), $path);
 logmsg("Running command: {$command}", DEBUG);
 $retVal  = exec($command, $output, $exitCode);
 if ($exitCode === 0) {
