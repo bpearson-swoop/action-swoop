@@ -137,27 +137,28 @@ class Secret
         $results = [];
         foreach ($files as $file) {
             $contents = file_get_contents($file);
+            $contents = $this->_prepare($contents);
             $chars    = "-_0123456789\/+*^%$#@!~&:?.";
             foreach (str_word_count($contents, 2, $chars) as $pos => $word) {
-                $word = $this->_clean($word);
-                if (strlen($word) < 8) {
+                $clean = $this->_clean($word);
+                if (strlen($clean) < 8) {
                     continue;
                 }//end if
 
-                if (preg_match('/^((sha|md)[0-9]{1,3}\-)/', $word) === 1) {
+                if (preg_match('/^((sha|md)[0-9]{1,3}\-)/', $clean) === 1) {
                     // Skip words starting with sha hash prefixes.
                     continue;
                 }//end if
 
-                if (strpos($word, 'data:') === 0
-                    || (strpos($word, 'http') === 0 && @parse_url($word) !== false)
-                    || (strpos($word, '/') !== false && file_exists($path.'/'.$word) === true)
+                if (strpos($clean, 'data:') === 0
+                    || (strpos($clean, 'http') === 0 && @parse_url($clean) !== false)
+                    || (strpos($clean, '/') !== false && file_exists($path.'/'.$clean) === true)
                 ) {
                     // Skip URLs/paths etc.
                     continue;
                 }//end if
 
-                $entropy = round($this->_shannon($word), 2);
+                $entropy = round($this->_shannon($clean), 2);
                 if ($entropy > 4.53) {
                     $results[] = [
                         "type"    => "error",
@@ -306,6 +307,22 @@ class Secret
         return $sfile;
 
     }//end _getTempFile()
+
+
+    /**
+     * Prepare content for analysis.
+     *
+     * @param string $content The content to prepare.
+     *
+     * @return string
+     */
+    private function _prepare(string $content): string
+    {
+        $content = str_replace("::", " ", $content);
+
+        return $content;
+
+    }//end _prepare()
 
 
     /**
