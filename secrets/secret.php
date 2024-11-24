@@ -152,7 +152,7 @@ class Secret
 
                 if (strpos($clean, 'data:') === 0
                     || (strpos($clean, 'http') === 0 && @parse_url($clean) !== false)
-                    || (strpos($clean, '/') !== false && file_exists($path.'/'.$clean) === true)
+                    || (strpos($clean, '/') !== false && file_exists(dirname($path).'/'.$clean) === true)
                 ) {
                     // Skip URLs/paths etc.
                     continue;
@@ -318,7 +318,7 @@ class Secret
      */
     private function _prepare(string $content): string
     {
-        $content = str_replace("::", " ", $content);
+        $content = str_replace(["::", ".#"], " ", $content);
 
         return $content;
 
