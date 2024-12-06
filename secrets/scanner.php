@@ -41,6 +41,7 @@ $secret->ignoreDirs[] = 'code-coverage';
 $secret->ignoreFiles[] = '.min.';
 $secret->ignoreFiles[] = '.compiled.';
 $secret->ignoreFiles[] = '.bundle.';
+$secret->ignoreFiles[] = 'styles.css';
 
 $files = $secret->getPRFiles($pr);
 $lines = $secret->run($files);
