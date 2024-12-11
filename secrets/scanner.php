@@ -46,7 +46,7 @@ $secret->ignoreFiles[] = 'styles.css';
 $files = $secret->getPRFiles($pr);
 $lines = $secret->run($files);
 if ($msgLevel == 8) {
-    // Extra ddebugging help.
+    // Extra debugging help.
     logmsg("Files changed", DEBUG);
     logmsg(implode("\n", $files), DEBUG);
 

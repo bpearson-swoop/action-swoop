@@ -16,6 +16,7 @@ class Secret
      */
     public $ignoreDirs = [
         ".git",
+        ".github",
         "node_modules",
         "vendor",
         "dist",
@@ -49,6 +50,13 @@ class Secret
         "yaml",
         "xml",
     ];
+
+    /**
+     * Known paths to ignore.
+     *
+     * @var array
+     */
+    private $_paths = [];
 
 
     /**
@@ -135,6 +143,15 @@ class Secret
     public function run(array $files, mixed $path=null): array
     {
         $results = [];
+
+        $startPath = null;
+        $startPath = ($files[0] ?? null);
+        if ($startPath !== null && is_file($startPath) === true) {
+            $startPath = dirname($startPath);
+        }//end if
+
+        $this->_populatePaths($startPath);
+
         foreach ($files as $file) {
             $contents = file_get_contents($file);
             $contents = $this->_prepare($contents);
@@ -243,6 +260,9 @@ class Secret
         // Remove leading/trailing characters.
         $word = trim($word, " \t\n\r\"'`");
 
+        // Remove known paths.
+        $word = str_ireplace($this->_paths, '', $word);
+
         // Remove known patterns.
         $word = str_ireplace('abcdefghijklmnopqrstuvwxyz', '', $word);
         $word = str_ireplace('abcdefghjklmnpqrstuvwxyz', '', $word);
@@ -307,6 +327,37 @@ class Secret
         return $sfile;
 
     }//end _getTempFile()
+
+
+    /**
+     * Populate the paths to remove some false positives.
+     *
+     * @param mixed $cwd The current working directory.
+     *
+     * @return void
+     */
+    private function _populatePaths(mixed $cwd = null): void
+    {
+        if (empty($this->_paths)) {
+            // Populate the paths to remove some false positives.
+            $output  = [];
+            $command = 'git rev-parse --show-toplevel';
+            if ($cwd !== null) {
+                $command = 'cd '.escapeshellarg($cwd).' && '.$command;
+            }//end if
+
+            $retVal  = exec($command, $output, $exitCode);
+            if (!empty($output[0])) {
+                $files   = [];
+                $command = sprintf('( cd %s; find . -type f )', escapeshellarg($output[0]));
+                $retVal  = exec($command, $files, $exitCode);
+                foreach ($files as $file) {
+                    $this->_paths[] = ltrim(str_replace($output[0], '', $file), './');
+                }//end foreach
+            }//end if
+        }//end if
+
+    }//end _populatePaths()
 
 
     /**
