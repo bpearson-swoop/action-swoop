@@ -270,6 +270,22 @@ class Secret
         $word = str_ireplace('1234567890', '', $word);
         $word = str_ireplace('23456789', '', $word);
 
+        // Remove some false positives.
+        $word = str_ireplace('$app', '', $word);
+
+        // Remove some keywords.
+        $keywords = [
+            'sharepoint',
+            'yammer',
+            'teams',
+            'form',
+            'request',
+            'default',
+            'message',
+            'value',
+        ];
+        $word = str_ireplace($keywords, '', $word);
+
         return $word;
 
     }//end _clean()
