@@ -14,6 +14,7 @@ if (file_exists($path) === false) {
 
 // Initialise.
 $secret = new Secret();
+//$secret->minEntropy = 3.5;
 $secret->ignoreDirs[] = 'sankey';
 $secret->ignoreDirs[] = 'HTMLCS';
 $secret->ignoreDirs[] = 'hc';
@@ -30,6 +31,7 @@ $secret->ignoreDirs[] = 'code-coverage';
 $secret->ignoreFiles[] = '.min.';
 $secret->ignoreFiles[] = '.compiled.';
 $secret->ignoreFiles[] = '.bundle.';
+$secret->ignoreFiles[] = 'styles.css';
 
 $files = $secret->getFiles($path);
 $lines = $secret->run($files, $path);

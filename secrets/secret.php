@@ -10,6 +10,13 @@ class Secret
 {
 
     /**
+     * Set the minimum entropy score.
+     *
+     * @var float
+     */
+    public $minEntropy = 4.53;
+
+    /**
      * Ignore directories (with defaults).
      *
      * @var array
@@ -155,7 +162,7 @@ class Secret
         foreach ($files as $file) {
             $contents = file_get_contents($file);
             $contents = $this->_prepare($contents);
-            $chars    = "-_0123456789\/+*^%$#@!~&:?.";
+            $chars    = "-_0123456789\\+*^%$#@!~&:?.";
             foreach (str_word_count($contents, 2, $chars) as $pos => $word) {
                 $clean = $this->_clean($word);
                 if (strlen($clean) < 8) {
@@ -169,14 +176,13 @@ class Secret
 
                 if (strpos($clean, 'data:') === 0
                     || (strpos($clean, 'http') === 0 && @parse_url($clean) !== false)
-                    || (strpos($clean, '/') !== false && file_exists(dirname($path).'/'.$clean) === true)
                 ) {
                     // Skip URLs/paths etc.
                     continue;
                 }//end if
 
                 $entropy = round($this->_shannon($clean), 2);
-                if ($entropy > 4.53) {
+                if ($entropy > $this->minEntropy) {
                     $results[] = [
                         "type"    => "error",
                         "file"    => ($path !== null) ? str_replace(realpath($path).'/', '', $file) : $file,
@@ -283,6 +289,8 @@ class Secret
             'default',
             'message',
             'value',
+            'collaboration',
+            'habits',
         ];
         $word = str_ireplace($keywords, '', $word);
 
