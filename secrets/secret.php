@@ -87,7 +87,7 @@ class Secret
     public function getFiles(string $path): array
     {
         $files = [];
-        if (is_dir($path)) {
+        if (is_dir($path) && in_array(basename($path), $this->ignoreDirs) === false) {
             $dir = new DirectoryIterator($path);
             foreach ($dir as $fileinfo) {
                 if ($fileinfo->isDot() === true) {
@@ -104,7 +104,7 @@ class Secret
                     $files[] = str_replace('//', '/', $path.'/'.$fileinfo->getFilename());
                 }//end if
             }//end foreach
-        } else if (is_file($path)) {
+        } else if (is_file($path) && in_array(basename($path), $this->ignoreFiles) === false) {
             $files[] = $path;
         }//end if
 
