@@ -38,6 +38,7 @@ $secret->ignoreDirs[] = 'solution';
 $secret->ignoreDirs[] = 'debug';
 $secret->ignoreDirs[] = 'release';
 $secret->ignoreDirs[] = 'code-coverage';
+$secret->ignoreDirs[] = 'vendor';
 $secret->ignoreFiles[] = '.min.';
 $secret->ignoreFiles[] = '.compiled.';
 $secret->ignoreFiles[] = '.bundle.';
