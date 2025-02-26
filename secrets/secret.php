@@ -309,7 +309,9 @@ class Secret
     private function _filterByPath(string $path): mixed
     {
         foreach ($this->ignoreDirs as $dir) {
-            if (strpos($path, "/{$dir}/") !== false) {
+            if (strpos($path, "/{$dir}/") !== false
+                || strpos($path, "{$dir}/") === 0
+            ) {
                 return false;
             }//end if
         }//end foreach
