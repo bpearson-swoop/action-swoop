@@ -160,6 +160,11 @@ class Secret
         $this->_populatePaths($startPath);
 
         foreach ($files as $file) {
+            if (!file_exists($file)) {
+                // File was likely deleted.
+                continue;
+            }//end if
+
             $contents = file_get_contents($file);
             $contents = $this->_prepare($contents);
             $chars    = "-_0123456789\\+*^%$#@!~&:?.";
